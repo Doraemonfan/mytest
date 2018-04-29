@@ -76,7 +76,7 @@ namespace Math {
 	
 
 	
-};
+}; //Math
 
 #endif
 
