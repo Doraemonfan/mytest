@@ -8,11 +8,11 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <ctime>
 
+using namespace std;
 int main() {
-
-	std::srand((unsigned)std::time(0));
-
+	srand((unsigned)time(0));
 	int total_service_time = 240;
 	int window_num = 4;
 	int simulate_num = 100000;
@@ -20,11 +20,11 @@ int main() {
 	QueueSystem system(total_service_time, window_num);
 	system.simulate(simulate_num);
 
-	std::cout << "The average time of \
-		customer staying in bank: "
+	std::cout << "The average time of " 
+		"customer staying in bank: "
 		<< system.getAvgStayTime() << std::endl;
-	std::cout << "The number of customer \
-		arriving bank per minute: "
+	std::cout << "The number of customer "
+		"arriving bank per minute: "
 		<< system.getAvgCustomers() << std::endl;
 
 	return 0;

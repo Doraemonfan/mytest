@@ -5,6 +5,7 @@
 #include "Queue.hpp"
 #include "Customer.hpp"
 #include "ServerWindow.hpp"
+#include "QueueSystem.hpp"
 
 using namespace std;
 int main() {

@@ -12,11 +12,24 @@
 class ServerWindow {
 
 public:
-	enum STATUS { WORK, IDLE };
+	enum STATUS { SERVE, IDLE };
+	ServerWindow() = default;
 	ServerWindow(const Customer& customer,
 			STATUS status = IDLE):
 		_customer(customer), _status(status)
 	{ }
+	bool isIdle() const { return _status == IDLE; }
+	void setCustomer(Customer& customer) {
+		_customer = customer;
+	}
+	void setBusy() { _status = SERVE; }
+	void setIdle() { _status = IDLE; }
+	int getCustomerArriveTime() const { 
+		return _customer._arrive_time;
+	}
+	int getCustomerDuration() const { 
+		return _customer._duration;
+	}
 
 //private:
 	Customer _customer;

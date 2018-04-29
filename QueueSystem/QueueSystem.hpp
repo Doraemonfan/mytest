@@ -8,9 +8,7 @@
 #define __QUEUESYSTEM_HPP__
 
 #include "Queue.hpp"
-#include "Customer.hpp"
 #include "Event.hpp"
-#include "Random.hpp"
 #include "ServerWindow.hpp"
 
 class QueueSystem {
@@ -21,29 +19,31 @@ public:
 	~QueueSystem();
 
 	void simulate(int simulate_num);
-	double getAvgStayTime() {
+	double getAvgStayTime() const {
 		return _avg_stay_time;
 	}
-	double getAvgCustomers() {
+	double getAvgCustomers() const {
 		return _avg_customers;
 	}
+	
 
 private:
-	void run();
+	double run();
 	void init();
 	void end();
-	void arrive_customer();
-	void depart_customer();
+	void customerArrived();
+	void customerDeparture();
+	int getIdleServiceWindow();
+
+	int _window_num;
+	int _total_service_time;
+	int _total_customer_stay_time;
+	int _total_customer_num;
 
 	ServerWindow* _windows;
-
-	Queue<Customer> _customers;
-	Queue<Event> _events;
-
-	Customer *_current_customer;
-	Customer *_current_event;
-	int _total_service_time;
-	int _window_num;
+	Queue<Customer> _customer_list;
+	Queue<Event> _event_list;
+	Event* _current_event;
 
 	double _avg_stay_time;
 	double _avg_customers;
@@ -52,7 +52,9 @@ private:
 QueueSystem::QueueSystem(int total_service_time,
 		int window_num):
 	_total_service_time(total_service_time),
-	_window_num(window_num)
+	_window_num(window_num),
+	_total_customer_stay_time(0),
+	_total_customer_num(0)
 { 
 	_windows = new ServerWindow[_window_num];
 }
@@ -62,47 +64,95 @@ QueueSystem::~QueueSystem() {
 }
 
 void QueueSystem::simulate(int simulate_num) {
-	int sum;
-	for (int i = 0; i < simulate_num; ++i)	
+	double sum = 0;
+	for (int i = 0; i != simulate_num; ++i)	
 		sum += run();
 	_avg_stay_time = 
-		static_cast<double>(_total_service_time)
-			/ sum * simulate_num;
+		static_cast<double>(sum) / simulate_num;
 	_avg_customers = 
-		static_cast<double>(sum) / simulate_num
-			/ _total_service_time;
+		static_cast<double>(_total_customer_num) 
+		/ (simulate_num * _total_service_time);
 }
 
-void QueueSystem::run() {
+void QueueSystem::init() {
+	_current_event = new Event;
+	if (!_current_event) abort();
+}
+
+double QueueSystem::run() {
 	init();
-	while (!_events.empty()) {	
-		current_event = _events.dequeue();
-		if (event._window_id < 0) 
-			arrive_customer();
+	while (_current_event) {	
+		if (_current_event->_event_type == -1) 
+			customerArrived();
 		else 
-			depart_customer();
+			customerDeparture();
+		delete _current_event;
+		_current_event = _event_list.dequeue();
 	}
 	end();
-}
-
-void QueueSystem::arrive_customer() {
-	int window = getIdleWindow();
-	int interval = Random::uniform();
-	Customer new_customer(
-		current_customer->_occur_time + interval);
-	if (new_customer->_occur_time
-void QueueSystem::init() {
-	_current_customer = new Customer(0);
-	if (!_current_customer) exit(-1);
-	_customes.enqueue(_current_customer);
-	Event events_start(
-		_current_customer->_arrive_vime, -1);
+	return static_cast<double>(_total_customer_stay_time)
+			/ _total_customer_num;
 }
  
 void QueueSystem::end() {
-	_customers.clear();
-	_events.clear();
+	for (int i = 0; i != _window_num; ++i)
+		_windows[i].setIdle();
+	_customer_list.clear();
+	_event_list.clear();
 }
 
+void QueueSystem::customerArrived() {
+	++_total_customer_num;
+	int intertime = Random::uniform(100);
+	int time = _current_event->_occur_time 
+			+ intertime;
+	if (time < _total_service_time) 
+		_event_list.orderEnqueue(Event(time));
+	_customer_list.enqueue(
+		Customer(_current_event->_occur_time) );
+	int idleIndex = getIdleServiceWindow();
+	if (idleIndex >= 0) {
+		Customer* customer = _customer_list.dequeue();
+		_windows[idleIndex].setCustomer(*customer );
+		_windows[idleIndex].setBusy();
+		Event temp_event(
+			_current_event->_occur_time 
+			+ customer->_duration, idleIndex );
+		_event_list.orderEnqueue(temp_event);
+		delete customer;
+	}
+}
 
+int QueueSystem::getIdleServiceWindow() {
+	for (int i = 0; i != _window_num; ++i)
+		if (_windows[i].isIdle())
+			return i;
+	return -1;
+}
+
+void QueueSystem::customerDeparture() {
+	if (_current_event->_occur_time 
+			< _total_service_time) {
+		_total_customer_stay_time += 
+			_current_event->_occur_time -
+			_windows[_current_event->_event_type].
+				getCustomerArriveTime();
+		if (!_customer_list.empty()) {
+			Customer* customer = 
+				_customer_list.dequeue();
+			_windows[_current_event->_event_type].
+				setCustomer(*customer);
+			Event temp_event(
+				_current_event->_occur_time 
+				+ customer->_duration,
+				_current_event->_event_type );
+			_event_list.orderEnqueue(temp_event);
+			delete customer;
+		} 
+		else {
+			_windows[_current_event->_event_type].
+				setIdle();
+		}
+	}
+}
 #endif

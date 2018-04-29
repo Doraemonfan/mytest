@@ -17,7 +17,7 @@ public:
 	~Queue();
 	T* dequeue();
 	T* enqueue(const T& node);
-	Event* order_enqueue(const Event& event);
+	Event* orderEnqueue(const Event& event);
 	void show();
 	void clear();
 	int length();
@@ -29,8 +29,8 @@ private:
 
 template <typename T>
 inline Queue<T>::Queue() {
-	_head = new T(0, 0);
-	if (!_head) exit(-1);
+	_head = new T;
+	if (!_head) abort();
 	_tail = _head;
 }
 
@@ -42,35 +42,32 @@ inline Queue<T>::~Queue() {
 
 template <typename T>
 void Queue<T>::clear() {
-	T* temp = _head->_next;
-	if (!temp) exit(-1);
-	while (temp) {
-		_head->_next = temp->_next;
-		delete temp;
-		temp = _head->_next;
+	T* new_node = _head->_next;
+	while (new_node) {
+		_head->_next = new_node->_next;
+		delete new_node;
+		new_node = _head->_next;
 	}
 	_tail = _head;
 }
 
 template <typename T>
 int Queue<T>::length() {
-	T* temp = _head->_next;
-	if (!temp) exit(-1);
+	T* new_node = _head->_next;
 	int len = 0;
-	while (temp) {
+	while (new_node) {
 		++len;
-		temp = temp->_next;
+		new_node = new_node->_next;
 	}
 	return len;
 }
 
 template <typename T>
 T* Queue<T>::dequeue() {
-	T* ret = _head->next;
-	if (!ret) exit(-1);
+	T* ret = _head->_next;
 	if (ret) {
-		_head->next = ret->next;
-		if (!(ret->next))
+		_head->_next = ret->_next;
+		if (!(ret->_next))
 			_tail = _head;
 	}
 	return ret;
@@ -78,37 +75,36 @@ T* Queue<T>::dequeue() {
 	
 template <typename T>
 inline T* Queue<T>::enqueue(const T& node) {
-	T* temp = new T(node);
-	if (!temp) exit(-1);
-	_tail->_next = temp;
-	_tail = temp;
+	T* new_node = new T(node);
+	if (!new_node) abort();
+	_tail->_next = new_node;
+	_tail = new_node;
 	return _head;
 }
 
 template <typename T>
-Event* Queue<T>::order_enqueue(const Event& event) {
-	Event* temp = new Event(event);
-	if (!temp) exit(-1);
+Event* Queue<T>::orderEnqueue(const Event& event) {
+	Event* new_node = new Event(event);
+	if (!new_node) abort();
 	T* hot = _head;
 	while (hot->_next && 
-		hot->_next->_occur_time < temp->_occur_time)
+		hot->_next->_occur_time < new_node->_occur_time)
 		hot = hot->_next;
-	temp->_next = hot->_next;
-	hot->_next = temp;
-	if (!(temp->_next))
-		_tail = temp;
+	new_node->_next = hot->_next;
+	hot->_next = new_node;
+	if (!(new_node->_next))
+		_tail = new_node;
 	return _head;
 }
 
 template <typename T>
 void Queue<T>::show() {
-	T* temp = _head->_next;
-	if (!temp) exit(-1);
+	T* new_node = _head->_next;
 	int i = 0;
-	while (temp) {
-		std::cout << i++ << " # ";
-		temp->show();
-		temp = temp->_next;
+	while (new_node) {
+	//	std::cout << i++ << " # ";
+		new_node->show();
+		new_node = new_node->_next;
 	}
 }
 
