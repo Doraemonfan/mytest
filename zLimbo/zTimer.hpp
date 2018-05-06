@@ -1,15 +1,17 @@
 //
-// zTime.hpp 
+// zTimer.hpp 
 // 2018/4/29
 //
-#ifndef __ZTIME_HPP__
-#define __ZTIME_HPP__
+#ifndef __ZTIMER_HPP__
+#define __ZTIMER_HPP__
 
 #include <string>
 #include <cstdio>
 #include <iostream>
 
-class zTime {
+namespace zLimbo {
+
+class zTimer {
 	
 private:
 	enum { SECOND_NUM = 1000000 };
@@ -19,7 +21,7 @@ private:
 	STATUS _status;
 
 public:
-	zTime(): _now(0), _span(0), _status(HALT) { }
+	zTimer(): _now(0), _span(0), _status(HALT) { }
 	void start() { 
 		_now = clock(); 
 		_span = 0; 
@@ -55,8 +57,9 @@ public:
 				<< std::endl;
 		}
 	}	
-};
+}; // class zTimer
 
+}; // namespace zLimbo
 
 #endif // zTime.hpp
 
