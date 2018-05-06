@@ -1,0 +1,49 @@
+#include "zSelectSort.hpp"
+#include "zTestSort.hpp"
+#include "zInsertSort.hpp"
+#include "zBubbleSort.hpp"
+#include "zShellSort.hpp"
+#include "zMergeSort.hpp"
+
+using namespace zLimbo;
+
+void testSelect() {
+	zTestInt(&zSelectSort<long>, "selectSort long: ");
+//	zTestInt(&zSelectSort2<long>, "selectSort2 long: ");
+	zTestReal(&zSelectSort<double>, "selectSort double: ");
+//	zTestReal(&zSelectSort2<double>, "selectSort2 double: ");
+}
+
+void testInsert() {
+	zTestInt(&zInsertSort<long>, "insertSort long: ");
+//	zTestInt(&zInsertSort2<long>, "insertSort2 long: ");
+	zTestReal(&zInsertSort<double>, "insertSort double: ");
+//	zTestReal(&zInsertSort2<double>, "insertSort2 double: ");
+//	zTestInt(&zInsertSort3<long>, "insertSort3 long: ");
+//	zTestReal(&zInsertSort3<double>, "insertSort3 double: ");
+}
+
+void testBubble() {
+	zTestInt(&zBubbleSort<long>, "bubbleSort long: ");
+	zTestReal(&zBubbleSort<double>, "bubbleSort double: ");
+}
+
+void testShell() {
+	zTestInt(&zShellSort<long>, "shellSort long: ");
+	zTestReal(&zShellSort<double>, "shellSort double: ");
+}
+
+void testMerge() {
+	zTestInt(&zMergeSort<long>, "mergeSort long: ");
+	zTestReal(&zMergeSort<double>, "mergeSort double: ");
+}
+
+int main() {
+//	testSelect();
+//	testInsert();
+//	testBubble();	
+	testShell();
+	testMerge();
+	return 0;
+}
+
