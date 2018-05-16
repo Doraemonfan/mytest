@@ -1,3 +1,12 @@
+//
+// zbst.hpp 
+// 2018/5/16
+// zlimbo
+//
+
+#ifndef __Z_BST_HPP__
+#define __Z_BST_HPP__
+
 #include <iostream>
 #include <random>
 #include <stack>
@@ -5,11 +14,11 @@
 #include <time.h>
 #include <string>
 #include <vector>
-#include <set>
 #include <sstream>
-#include <cstring>
 
 using namespace std;
+
+namespace zlimbo {
 
 template <typename T>
 class Tnode {
@@ -57,6 +66,7 @@ void Tree<T>::dropChTree(Tnode<T>*& np) {
 	dropChTree(np->_lc);
 	dropChTree(np->_rc);
 	delete np;
+	--_size;
 	np = nullptr;
 }
 
@@ -79,8 +89,8 @@ Tnode<T>* Tree<T>::insert(const T& e) {
 }
 
 template <typename T>
-void Tree<T>::show() const {
-	cout << "size:" << _size << endl;
+void Tree<T>::show1() const {
+	cout << "travel level: ";
 	if (!_root) return;
 	queue<Tnode<T>*> Q;
 	Q.push(_root);
@@ -95,7 +105,7 @@ void Tree<T>::show() const {
 }	
 
 template <typename T>
-void Tree<T>::show1() const {
+void Tree<T>::show() const {
 	cout << "size:" << _size << endl;
 	if (!_root) return; 
 	stack<Tnode<T>*> S;
@@ -122,10 +132,7 @@ void Tree<T>::show1() const {
 		np->_len = stmp.size();
 
 		np->_x = x;
-		x += np->_len + 1;
-
-		cout << stmp << "(" << np->_x << "," 
-			<< np->_y << ") " << endl;
+		x += np->_len + 0;
 		if (np->_rc) {
 			y = np->_y + 1;
 			left_down(np->_rc);
@@ -166,13 +173,13 @@ void Tree<T>::show1() const {
 		}
 
 		for (; col <= rp; ++col) {
-			if (col < lp) {
-				cout << " ";
-			}
-		 	else if (col == mp) {
+		 	if (col == mp) {
 				cout << '[' << np->_e << ']';
 				col += np->_len;
 				continue;
+			}
+			else if (col < lp) {
+				cout << " ";
 			}
 			else cout << '_';
 		}
@@ -182,18 +189,6 @@ void Tree<T>::show1() const {
 }
 	
 	
-int main() {
-	Tree<int> tree;
-	default_random_engine e(time(0));
-	uniform_int_distribution<int> u(0, 100);
-	for (int i = 0; i < 20; ++i) {
-		int t = u(e);
-		cout << t << " ";
-		tree.insert(t);
-	}
-	cout << endl;
-	tree.show();
-	tree.show1();
-	return 0;
-}
+}; // namespace zlimbo
 
+#endif // zbst.hpp
