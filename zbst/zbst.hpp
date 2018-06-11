@@ -34,6 +34,7 @@ public:
 	Tnode* _pa;
 	Tnode* _lc;
 	Tnode* _rc;
+
 	int _x;
 	int _y;
 	int _len;
@@ -50,11 +51,14 @@ public:
 	}
 	~Tree() { dropChTree(_root); }
 	void clear() { dropChTree(_root); }
-	Tnode<T>* insert(const T& e);
+	Tnode<T>* insert(const T &e);
 	void show() const;
-	void show1() const;
-//	void travelLevel();
-//private:
+	void travelLevel();
+	void travelPre();
+	void travelMedi();
+	void travelPost();
+	Tnode<T>* search(const T &e);
+private:
 	void dropChTree(Tnode<T>*& ch);
 	Tnode<T>* _root;
 	int _size;
@@ -89,7 +93,16 @@ Tnode<T>* Tree<T>::insert(const T& e) {
 }
 
 template <typename T>
-void Tree<T>::show1() const {
+Tnode<T>* Tree<T>::search(const T& e) {
+	Tnode<T>* np = _root;
+	while (np) {
+	}
+
+}
+
+
+template <typename T>
+void Tree<T>::travelLevel() {
 	cout << "travel level: ";
 	if (!_root) return;
 	queue<Tnode<T>*> Q;
@@ -105,6 +118,79 @@ void Tree<T>::show1() const {
 }	
 
 template <typename T>
+void Tree<T>::travelPre() {
+	cout << "travel preOrder: ";
+	if (!_root) return;
+	stack<Tnode<T>*> S;
+	S.push(_root);
+	Tnode<T>* np = nullptr;
+	while (!S.empty()) {
+		np = S.top(); S.pop();
+		cout << np->_e << " ";
+		if (np->_rc) S.push(np->_rc);
+		if (np->_lc) S.push(np->_lc);
+	}
+	cout << endl;
+}
+
+template <typename T>
+void Tree<T>::travelMedi() {
+	cout << "travel mediOrder: ";
+	if (!_root) return;
+	stack<Tnode<T>*> S;
+	auto left_down = [&](Tnode<T> *p) {
+		S.push(p);
+		while (p->_lc) {
+			S.push(p->_lc);
+			p = p->_lc;
+		}
+	};
+	left_down(_root);
+	Tnode<T> *np = nullptr;
+	while (!S.empty()) {
+		np = S.top(); S.pop();
+		cout << np->_e << " ";
+		if (np->_rc) left_down(np->_rc);
+	}
+	cout << endl;
+}	
+
+template <typename T>
+void Tree<T>::travelPost() {
+	cout << "travel postOrder: ";
+	if (!_root) return;
+	stack<Tnode<T>*> S;
+	auto down = [&](Tnode<T> *p) {
+		S.push(p);
+		while (p->_lc) {
+			S.push(p->_lc);
+			p = p->_lc;
+		}
+	};
+	down(_root);
+	Tnode<T> *np = nullptr;
+	int i = 0;
+	while (!S.empty()) {
+		if (++i == 100) return;
+		np = S.top();
+		if (np->_rc) down(np->_rc);
+		else {
+			cout << np->_e << " ";
+			S.pop();
+			while (np->_pa && np->_pa->_rc == np) {
+				np = S.top();
+				cout << np->_e << " ";
+				S.pop();
+			}
+		}
+	}
+	cout << endl;
+}
+
+				
+
+
+template <typename T>
 void Tree<T>::show() const {
 	cout << "size:" << _size << endl;
 	if (!_root) return; 
@@ -112,13 +198,13 @@ void Tree<T>::show() const {
 	Tnode<T>* np = nullptr;
 	int x = 0, y = 0;
 
-	auto left_down = [&](Tnode<T>* np) {
-		S.push(np);
-		np->_y = y++;
-		while (np->_lc) { 
-			S.push(np->_lc);
-			np = np->_lc;
-			np->_y = y++;
+	auto left_down = [&](Tnode<T>* p) {
+		S.push(p);
+		p->_y = y++;
+		while (p->_lc) { 
+			S.push(p->_lc);
+			p = p->_lc;
+			p->_y = y++;
 		}
 	};
 

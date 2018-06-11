@@ -14,19 +14,24 @@ int main() {
 		cout << t << " ";
 		tree.insert(t);
 	}
+
+	tree.insert(0);
+	tree.insert(-2);
+	tree.insert(4);
+	tree.insert(2);
+	tree.insert(3);
+	tree.insert(-1);
 	cout << endl;
 	tree.show();
 	cout << '\n';
-	tree.show1();
+	tree.travelLevel();
 	cout << '\n';
-	Tree<string> Stree;
-	Stree.insert("I am child!");
-	Stree.insert("You are a boy.");
-	Stree.insert("She is bad.");
-	Stree.insert("He is cute.");
-	Stree.show();
-	Stree.clear();
-	Stree.show();
+	tree.travelPre();
+	cout << "\n";
+	tree.travelMedi();
+	cout << "\n";
+	tree.travelPost();
+	cout << "\n";
 	return 0;
 }
 

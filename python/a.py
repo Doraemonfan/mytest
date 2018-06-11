@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 x = 1
 n = 10
 sum = 0
